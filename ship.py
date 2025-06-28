@@ -1,12 +1,14 @@
 import pygame
-
+from pygame.sprite import Sprite
 IMAGE_DIRECTORY = "C:/Users/trbmi/OneDrive/Desktop/TE/Python/Alien Invasion/image/ship.bmp"
 
-class Ship:
+class Ship(Sprite):
     """A class to manage the player's ship."""
 
     def __init__(self, ai_game):
         """Initialize the ship and set its starting position."""
+        super().__init__()
+
         self.screen = ai_game.screen
         self.screen_rect = ai_game.screen.get_rect()
 

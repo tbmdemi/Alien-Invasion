@@ -19,8 +19,7 @@ class AlienInvasion:
 
         self.settings = Settings()
         self.settings._status()
-        self.stats = GameStats(self)
-
+        
         self.screen = pygame.display.set_mode((0,0),
                                               pygame.FULLSCREEN)
         self.settings.screen_height = self.screen.get_rect().height
@@ -28,6 +27,8 @@ class AlienInvasion:
 
         # Set name for the window
         pygame.display.set_caption("Alien Invasion")
+        
+        self.stats = GameStats(self)
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
 
@@ -135,12 +136,19 @@ class AlienInvasion:
         if collisions:
             for alien in collisions.values():
                 self.stats.score += self.settings.alien_points * len(self.aliens)
+                self.stats.aliens_shot += len(alien)
             self.sb.prep_score()
+            self.sb.prep_aliens_shot()
+            self.sb.check_high_score()
 
         if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
             self.settings.increase_speed()
+
+            # Increase level
+            self.stats.level += 1
+            self.sb.prep_level()
 
     def _create_fleet(self):
         """Create the fleet of aliens"""
@@ -200,8 +208,9 @@ class AlienInvasion:
         """Respond to the ship being hit by an alien"""
 
         if self.stats.ships_left > 0 :
-            # Decrement ships left
+            # Decrement ships left, and update scoreboard
             self.stats.ships_left -= 1
+            self.sb.prep_ships()
 
             # Get rid of any remaining aliens and bullets
             self.aliens.empty()
@@ -239,6 +248,9 @@ class AlienInvasion:
             self.stats.reset_stats()
             self.stats.game_active = True
             self.sb.prep_score()
+            self.sb.prep_level()
+            self.sb.prep_ships()
+            self.sb.prep_aliens_shot()
 
             # Get rid of any remaining aliens and bullets
             self.aliens.empty()
